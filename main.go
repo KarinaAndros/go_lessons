@@ -29,4 +29,21 @@ func main(){
 	}else{
 		fmt.Println("Bad")
 	}
+
+	//for
+	for i := 0; i < 5; i++{
+		fmt.Println(i)
+	}
+
+	aboba()
+}
+
+func aboba (){
+	//anonim function (the end action for function)
+	defer func (){
+		fmt.Println("Bye")
+	}()
+	a:= 1
+	b:= 2
+	fmt.Println(a+b)
 }
