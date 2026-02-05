@@ -74,3 +74,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 	//отправка ответа - сообщение и токен
 	utils.ReturnResponse(w, map[string]string{"message":"авторизация прошла успешно!", "token": tokenString}, http.StatusOK)
 }
+
+//login user
+
