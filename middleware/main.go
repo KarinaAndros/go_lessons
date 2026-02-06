@@ -19,7 +19,7 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		}
 		//получаем токен из заголовка
 		parts := strings.Split(authHeader, " ")
-		if parts[0] != "Bearer" || len(parts) != 2 {
+		if len(parts) != 2 || parts[0] != "Bearer" {
 			if !utils.CheckError(w, nil ,"Неверный формат заголовка", http.StatusUnauthorized){ return }
 		}
 		//провека токена

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -34,8 +35,10 @@ func DecodeData(r *http.Request, w http.ResponseWriter, dst interface{})bool{
 }
 
 //return response
-func ReturnResponse(w http.ResponseWriter, message map[string]string, status int){
+func ReturnResponse(w http.ResponseWriter, data interface{}, status int){
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(message)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+    log.Println("Ошибка кодирования ответа:", err)
+  }
 }

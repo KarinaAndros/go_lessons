@@ -42,8 +42,11 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request){
 	query := "INSERT INTO users (name, password, email) VALUES (?, ?, ?)"
 	_, err = database.DB.Exec(query, user.Name, string(hashedPassword), user.Email)
 	if !utils.CheckError(w, err, "Ошибка регистрации пользователя", http.StatusInternalServerError){ return }
+	//генерация токена
+	tokenString, err := GenerateToken(user.Email)
+	if !utils.CheckError(w, err, "Ошибка генерации токена", http.StatusInternalServerError){ return }
 	//отправка ответа
-	utils.ReturnResponse(w, map[string]string{"message":"регистрация прошла успешно!"}, http.StatusCreated)
+	utils.ReturnResponse(w, map[string]string{"message":"регистрация прошла успешно!", "token": tokenString}, http.StatusCreated)
 }
 
 //login
@@ -74,6 +77,4 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 	//отправка ответа - сообщение и токен
 	utils.ReturnResponse(w, map[string]string{"message":"авторизация прошла успешно!", "token": tokenString}, http.StatusOK)
 }
-
-//login user
 
