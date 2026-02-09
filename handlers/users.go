@@ -3,6 +3,7 @@ package handlers
 import (
 	"backend/database"
 	"backend/models"
+	"backend/repository"
 	"backend/utils"
 	"log"
 	"net/http"
@@ -30,5 +31,23 @@ func GetUsers( w http.ResponseWriter, r *http.Request){
 		users = append(users, user)
 	}
 	//возврат ответа
+	utils.ReturnResponse(w, users, http.StatusOK)
+}
+
+func SearchUsersHandler(w http.ResponseWriter, r *http.Request){
+	//проверяем метод
+	if !utils.CheckMethod(r, w, http.MethodGet){return}
+	//достаём фамилию из URL
+	surname := r.URL.Query().Get("surname")
+	if surname == ""{
+		utils.ReturnResponse(w, map[string]string{"message": "Параметр surname обязателен"}, http.StatusBadRequest)
+		return
+	}
+	//получаем список с пользователями
+	users, err := repository.GetUserBySurname(surname)
+	if !utils.CheckError(w, err, "Ошибка при поиске пользователей", http.StatusInternalServerError) {
+  	return
+  }
+	//возвращаем результат
 	utils.ReturnResponse(w, users, http.StatusOK)
 }
