@@ -3,10 +3,10 @@ package handlers
 import (
 	"backend/database"
 	"backend/models"
+	"backend/repository"
 	"backend/utils"
 	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -38,7 +38,6 @@ func GetUserData(w http.ResponseWriter, r *http.Request){
 
 //edit auth user data
 func EditData(w http.ResponseWriter, r *http.Request){
-	
 	//проверяем метод
 	if !utils.CheckMethod(r, w, http.MethodPost){return}
 	//получаем email из context()
@@ -47,18 +46,9 @@ func EditData(w http.ResponseWriter, r *http.Request){
 	//декодируем данные из тела запроса
 	var newData models.User
 	if !utils.DecodeData(r, w, &newData){ return }
-	log.Printf("Данные для обновления: Имя='%s', Фамилия='%s', Email='%s'", 
-        newData.Name, newData.Surname, email)
-	//проверяем данные на пустые значения
-	err := newData.Validate()
-	if err != nil {
-		utils.ReturnResponse(w, map[string]string{"message" : err.Error()}, http.StatusBadRequest)
-		return
-	}
 	//выполняем изменение данных
-	query := "UPDATE users SET name = ?, surname = ?, avatar = ? WHERE email = ?"
-	_,err = database.DB.Exec(query, newData.Name, newData.Surname, newData.Avatar, email)
-	if !utils.CheckError(w, err, "Ошибка изменения данных", http.StatusInternalServerError){return}
+	err := repository.UpdateUser(email, newData)
+	if !utils.CheckError(w, err, "Ошибка обновления данных", http.StatusInternalServerError){return}
 	//возвращаем ответ
 	utils.ReturnResponse(w, map[string]string{"message" : "данные успешно обновлены!"}, http.StatusOK)
 }
