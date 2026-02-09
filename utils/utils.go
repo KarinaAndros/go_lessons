@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -41,4 +42,14 @@ func ReturnResponse(w http.ResponseWriter, data interface{}, status int){
 	if err := json.NewEncoder(w).Encode(data); err != nil {
     log.Println("Ошибка кодирования ответа:", err)
   }
+}
+
+//return email of token
+func GetEmail(w http.ResponseWriter, r *http.Request) string{
+	email, ok := r.Context().Value("email").(string)
+	if !ok{
+		CheckError(w, fmt.Errorf("context error"), "Ошибка авторизации", http.StatusUnauthorized)
+    return ""
+	}
+	return email
 }
