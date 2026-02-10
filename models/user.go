@@ -11,6 +11,7 @@ type User struct{
 	Avatar string `json:"avatar"`
 	Lat float64 `json:"lat"`
 	Lng float64 `json:"lng"`
+	Role_id int `json:"role_id"`
 }
 
 func (u *User) Validate() error{

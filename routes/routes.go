@@ -13,7 +13,7 @@ func Routes() *http.ServeMux{
 	mux.HandleFunc("/api/login", handlers.LoginHandler)
 
 	//auth user routes
-	mux.HandleFunc("/api/users", middleware.AuthMiddleware(handlers.GetUsers))
+	mux.HandleFunc("/api/users", middleware.AuthMiddleware(middleware.AdminMiddleware(handlers.GetUsers)))
 	mux.HandleFunc("/api/user", middleware.AuthMiddleware(handlers.GetUserData))
 	mux.HandleFunc("/api/user/edit", middleware.AuthMiddleware(handlers.EditData))
 	return mux

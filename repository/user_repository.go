@@ -3,7 +3,6 @@ package repository
 import (
 	"backend/database"
 	"backend/models"
-	"database/sql"
 	"log"
 )
 
