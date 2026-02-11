@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"backend/database"
-	"backend/models"
 	"backend/utils"
 	"context"
 	"net/http"

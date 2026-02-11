@@ -34,3 +34,14 @@ func GetUserBySurname(surname string) ([]models.User, error){
 	}
 	return users, nil
 }
+
+//delete user
+func DeleteUser(email string) error{
+	//обновляем данные пользователя
+	query := "UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE email = ?"
+	_, err := database.DB.Exec(query, email)
+	if err != nil {
+		return err	
+	}
+	return nil
+}

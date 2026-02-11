@@ -1,22 +1,19 @@
 package models
 
-import "errors"
+import (
+	"time"
+)
 
 type User struct{
 	ID int `json:"id"`
-	Name *string `json:"name"`
+	Name string `json:"name"`
 	Surname *string `json:"surname"`
 	Password string `json:"password"`
 	Email string `json:"email"`
 	Avatar string `json:"avatar"`
-	Lat float64 `json:"lat"`
-	Lng float64 `json:"lng"`
+	Lat *float64 `json:"lat"`
+	Lng *float64 `json:"lng"`
 	Role_id int `json:"role_id"`
-}
-
-func (u *User) Validate() error{
-	if u.Name != nil && *u.Name == ""{
-		return errors.New("имя не может быть пустым")
-	}
-	return nil
+	Created_at time.Time `json:"created_at"`
+	Deleted_at *time.Time `json:"deleted_at"`
 }

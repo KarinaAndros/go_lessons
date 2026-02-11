@@ -3,6 +3,7 @@ package handlers
 import (
 	"backend/database"
 	"backend/models"
+	"backend/repository"
 	"backend/utils"
 	"database/sql"
 	"log"
@@ -58,7 +59,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 	if !utils.DecodeData(r, w, &user){ return }
 	//выполнение запроса - поиск пользователя в базе и получение хэшированного пароля
 	var hashedPassword string
-	query := "SELECT password FROM users WHERE email = ?"
+	query := "SELECT password FROM users WHERE email = ? AND deleted_at IS NULL"
 	err := database.DB.QueryRow(query, user.Email).Scan(&hashedPassword)
 	if err != nil {
     if err == sql.ErrNoRows {
@@ -78,3 +79,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request){
 	utils.ReturnResponse(w, map[string]string{"message":"авторизация прошла успешно!", "token": tokenString}, http.StatusOK)
 }
 
+//delete
+func DeleteUser(w http.ResponseWriter, r *http.Request){
+	//получаем email
+	email := utils.GetEmail(w, r)
+	if email ==  ""{return}
+	//передаём email и обновляем deleted_at
+	err := repository.DeleteUser(email)
+	if !utils.CheckError(w, err, "Ошибка удаления", http.StatusBadRequest){return}	
+}
