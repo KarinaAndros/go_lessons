@@ -3,6 +3,7 @@ package repository
 import (
 	"backend/database"
 	"backend/models"
+	"database/sql"
 	"log"
 )
 
@@ -44,4 +45,20 @@ func DeleteUser(email string) error{
 		return err	
 	}
 	return nil
+}
+
+func EditOrCreateUser(user *models.User, externalID string) error {
+    var existingID int
+    query := "SELECT id FROM users WHERE email = ?"
+    err := database.DB.QueryRow(query, user.Email).Scan(&existingID)
+    if err == sql.ErrNoRows {
+        insertQuery := "INSERT INTO users (name, email, role_id, provider, external_id, avatar) VALUES (?, ?, ?, ?, ?, ?)"
+        _, err := database.DB.Exec(insertQuery, user.Name, user.Email, 1, "google", externalID, user.Avatar)    
+        return err
+    } else if err != nil {
+        return err
+    }
+    updateQuery := "UPDATE users SET provider = ?, external_id = ?, avatar = ? WHERE email = ?"
+    _, err = database.DB.Exec(updateQuery, "google", externalID, user.Avatar, user.Email)
+    return err
 }

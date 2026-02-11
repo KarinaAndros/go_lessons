@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/markbates/goth/gothic"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -87,4 +88,32 @@ func DeleteUser(w http.ResponseWriter, r *http.Request){
 	//передаём email и обновляем deleted_at
 	err := repository.DeleteUser(email)
 	if !utils.CheckError(w, err, "Ошибка удаления", http.StatusBadRequest){return}	
+}
+
+func GoogleCallback(w http.ResponseWriter, r *http.Request) {
+    gothUser, err := gothic.CompleteUserAuth(w, r)
+    if err != nil {
+        utils.CheckError(w, err, "Ошибка авторизации через Google", http.StatusInternalServerError)
+        return
+    }
+    user := models.User{
+        Name:        gothUser.FirstName,
+        Email:       gothUser.Email,
+        Avatar:      gothUser.AvatarURL,
+        ID:          0,
+    }
+    err = repository.EditOrCreateUser(&user, gothUser.UserID) 
+    if err != nil {
+        utils.CheckError(w, err, "Ошибка сохранения пользователя", http.StatusInternalServerError)
+        return
+    }
+    token, err := GenerateToken(user.Email)
+    if err != nil {
+        utils.CheckError(w, err, "Ошибка генерации токена", http.StatusInternalServerError)
+        return
+    }
+    utils.ReturnResponse(w, map[string]string{
+        "token":   token,
+        "message": "Добро пожаловать, " + user.Name,
+    }, http.StatusOK)
 }
